@@ -2,10 +2,8 @@
 
 
 INTERACTIVE="yup"
-
 TMP_INSTALL_FOLDER="/tmp"
 
-VIMIUM_URL="https://addons.mozilla.org/firefox/downloads/file/3807948/vimium_ff-1.67-fx.xpi"
 
 BASE_PACKAGES=(
     "base" "base-devel" "firefox" "thunderbird" "dolphin" "bluez" 
@@ -74,9 +72,14 @@ install_yay() {
 }
 
 install_base() {
-    _pacman_install "${BASE_PACKAGES[@]}" "${KDE_PACKAGES[@]}"
+    _pacman_install "${BASE_PACKAGES[@]}"
 }
 
+install_desktop() {
+    _pacman_install "${KDE_PACKAGES[@]}"
+    _systemctl enable sddm
+    install_nordic_theme
+}
 
 install_nordic_theme() {
     _yay_install zafiro-icon-theme-git nordic-kde-git sddm-nordic-theme-git
@@ -85,6 +88,8 @@ install_nordic_theme() {
 }
 
 install_vimium() {
+    local VIMIUM_URL="https://addons.mozilla.org/firefox/downloads/file/3807948/vimium_ff-1.67-fx.xpi"
+
     XPI_PATH="$TMP_INSTALL_FOLDER/vimium.xpi"
     wget -O "$XPI_PATH" "$VIMIUM_URL" 
 
