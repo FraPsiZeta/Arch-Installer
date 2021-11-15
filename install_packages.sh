@@ -6,19 +6,27 @@ TMP_INSTALL_FOLDER="/tmp"
 
 
 BASE_PACKAGES=(
-    "base" "base-devel" "firefox" "thunderbird" "dolphin" "bluez" 
-    "networkmanager" "networkmanager-openvpn" "lm_sensors" "spectacle" 
-    "openssh" "git" "curl" "nodejs" "cmake" "make" "man-db" 
-    "mupdf" "xbindkeys" "gimp" "zip" "ark" "automake" "autoconf"
-    "emacs" "sudo" "vim" "wget" "terminator"
+    "base" "base-devel" "openssh" "lm_sensors" "man-db"
+    "networkmanager" "networkmanager-openvpn" "bluez"
+    "git" "cmake" "make" "automake" "autoconf"
+    "sudo" "xbindkeys" "vim"
+    "wget" "curl" "zip" "unzip" "ark"
  )
+
+APPLICATION_PACKAGES=(
+    "firefox" "thunderbird" "dolphin"
+    "spectacle"  "mupdf"  "terminator"
+    "gimp" "emacs"  "pass" "firefox-extension-passff"
+    "nodejs"
+)
+
 
 KDE_PACKAGES=(
     "plasma-meta" "sddm" "xorg-server"
 )
 
 
-assert_root() {
+_assert_root() {
     if [ "$EUID" -ne 0 ]
     then
         printf "You need root privileges to execute this script.\n"
@@ -26,17 +34,17 @@ assert_root() {
     fi
 }
 
-assert_root
-
 #: $1 Username
+#: $2.. Command to execute
 _su() {
+    _check_user_arg $1 || exit 5
     local user="$1"
     shift
     sudo -u "$user" "$@"
 }
 
 _check_user_arg() {
-    [ -z "$1" ] && (printf "Missing user argument.\n"; exit 5)
+    [ -z "$1" ] && printf "Missing user argument.\n" && return 5
 
     local found=$(cut -d: -f1 /etc/passwd | while read -r user
     do
@@ -49,24 +57,18 @@ _check_user_arg() {
 
     if [ -z $found ]
     then
-        printf "User $1 not found.\n"
-        exit 4
+        printf "User \'$1\' not found.\n"
+        return 4
     fi
 
 }
 
-#: $1 Username
 _yay_install() {
-    _check_user_arg "$1"
-
-    local user="$1"
-    shift
-
     if [ $INTERACTIVE ]
     then
-        _su $user yay -Sy --answerclean All --answerdiff None "$@"
+        yay -Sy --answerclean All --answerdiff None "$@"
     else
-        _su $user yay -Sy --noconfirm --answerclean All --answerdiff None "$@"
+        yay -Sy --noconfirm --answerclean All --answerdiff None "$@"
     fi
 }
 
@@ -87,7 +89,20 @@ set_timezone() {
     local region=${1:-Europe}
     local city=${2:-Rome}
     ln -sf /usr/share/zoneinfo/"$region"/"$city" /etc/localtime
+    hwclock --systohc
 }
+
+
+generate_locale() {
+    local locale=${1:-"en_US.UTF-8 UTF-8"}
+    local lang=$(echo "$locale" | cut -d' ' -f1)
+
+    sed -i "s/#$locale/$locale/g" /etc/locale.gen
+    locale-gen
+
+    echo "LANG=$lang" > /etc/locale.conf
+}
+
 
 install_networkmanager() {
     _pacman_install networkmanager
@@ -107,36 +122,64 @@ install_base() {
     _pacman_install "${BASE_PACKAGES[@]}"
 }
 
+install_applications() {
+    _pacman_install "${APPLICATION_PACKAGES[@]}"
+}
+
 install_desktop() {
     _pacman_install "${KDE_PACKAGES[@]}"
     _systemctl enable sddm
     install_nordic_theme
 }
 
-#: $1 User to whom the themes will be installeed.
+#: $1 User to whom the themes will be installeed for.
 install_nordic_theme() {
-    _check_user_arg "$1"
+    if [ "$EUID" -eq 0 ]
+    then
+        printf "Makepkg installation should not be run as root.\n"
+        printf "Skipping theme installation.\n"
+        return 1
+    fi
 
-    local user="$1"
-
-    _yay_install "$user" zafiro-icon-theme-git nordic-kde-git sddm-nordic-theme-git
-    _su $user plasma-apply-lookandfeel -a Nordic
-    _su $user /usr/lib/plasma-changeicons Zafiro
+    _yay_install zafiro-icon-theme-git nordic-kde-git sddm-nordic-theme-git
+    plasma-apply-lookandfeel -a Nordic
+    /usr/lib/plasma-changeicons Zafiro
 }
+
+#: $1 Extension path
+_get_ff_extension_id() {
+    local installation_folder="$TMP_INSTALL_FOLDER/.tmp_extension"
+
+    rm -rf "$installation_folder"
+    mkdir "$installation_folder" && unzip -d "$installation_folder" "$1" 1>/dev/null
+    local ID=$(openssl asn1parse -inform DER -in "$installation_folder/META-INF/mozilla.rsa" | sed -n 's/.*:\({[a-zA-Z0-9\-]*}\).*/\1/p')
+    rm -rf "$installation_folder"
+    printf "$ID"
+    }
 
 #: $1 User to whom install vimium
 install_vimium() {
-    _check_user_arg "$1"
+    _check_user_arg "$1" || return 2
 
     local user="$1"
     local vimium_url="https://addons.mozilla.org/firefox/downloads/file/3807948/vimium_ff-1.67-fx.xpi"
 
     xpi_path="$TMP_INSTALL_FOLDER/vimium.xpi"
-    wget -O "$xpi_path" "$vimium_url" 
+    wget -O "$xpi_path" "$vimium_url"
+
+    local _id=$(_get_ff_extension_id "$xpi_path")
+
+    if [ -z "$_id" ]
+    then
+        printf "Unable to find extension ID for vimium. Installation failed.\n" >&2
+        rm -f "$xpi_path"
+        sleep 3
+        return 1
+    fi
 
     for dir in /home/"$user"/.mozilla/firefox/*.default-release/extensions
     do
-        install -Dm644 "$xpi_path" "$dir/{d7742d87-e61d-4b78-b8a1-b469842139fa}.xpi"
+        install -Dm644 "$xpi_path" "$dir/$_id.xpi"
     done
 
     rm -f "$xpi_path"
@@ -167,7 +210,7 @@ _find_root_uuid() {
 
 }
 
-#: MacbookPro-specific installation:
+#: MacbookPro-specific installations:
 #:---------------------------------:#
 mbp_systemdboot_setup(){
     local boot_path="/boot"
