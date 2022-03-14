@@ -6,14 +6,14 @@ source "$ROOT_PATH/utils.sh"
 TMP_INSTALL_FOLDER="/tmp"
 
 BASE_PACKAGES=(
-    "base" "base-devel" "openssh" "lm_sensors" "man-db"
-    "networkmanager" "networkmanager-openvpn" "bluez"
-    "git" "cmake" "make" "automake" "autoconf"
+    "base" "base-devel" "openssh" "linux-headers" "intel-ucode"
+    "lm_sensors" "man-db" "networkmanager" "networkmanager-openvpn"
+    "bluez" "git" "cmake" "make" "automake" "autoconf"
     "sudo" "vim" "wget" "curl" "zip" "unzip"
 )
 
 APPLICATION_PACKAGES=(
-    "firefox" "thunderbird" "spectacle"  "mupdf"
+    "firefox" "thunderbird" "spectacle" "mupdf"
     "gimp" "emacs"  "pass" "firefox-extension-passff"
     "nodejs" "firefox-tridactyl"
 )
@@ -45,9 +45,10 @@ install_networkmanager() {
 
 
 install_yay() {
+    local yay_install_folder="$TMP_INSTALL_FOLDER/yay"
     pacman_install git base-devel
-    git clone https://aur.archlinux.org/yay.git "$TMP_INSTALL_FOLDER/yay"
-    cd "$TMP_INSTALL_FOLDER/yay"
+    git clone https://aur.archlinux.org/yay.git "$yay_install_folder"
+    cd "$yay_install_folder"
     makepkg -si
 }
 
@@ -71,8 +72,31 @@ install_tlp() {
     fi
 }
 
+
+configure_encryption() {
+    pacman_install lvm2
+    sed -i 's/HOOKS=(\([^)]\))/HOOKS=(\1 encrypt lvm2)/g' /etc/mkinitcpio.conf
+    mkinitcpio -p linux
+}
+
+
+# $1: hostname
+add_hosts() {
+    [ -z $1 ] && printf "ERROR: hostname needed for function 'add_hosts'\n" && exit 5
+
+    cat $1 > /etc/hostname
+    cat > /etc/hosts <<EOF
+127.0.0.1   localhost
+::1         localhost
+127.0.1.1   myhostname.localdomain $1
+EOF
+}
+
+
 #: $1 User to whom install emacs
 install_emacs() {
+    check_user_arg $1 || exit 5
+
     local user=$1
     pacman_install emacs
     systemctl_user $user enable emacs
@@ -90,4 +114,11 @@ Terminal=false
 Categories=Development;TextEditor;Utility;
 StartupWMClass=Emacs
 EOF
+}
+
+
+install_spacemacs() {
+    install_emacs
+    pacman_install git
+    git clone -b develop https://github.com/syl20bnr/spacemacs ~/.emacs.d
 }
