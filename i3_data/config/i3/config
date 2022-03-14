@@ -52,26 +52,31 @@ exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 exec --no-startup-id nm-applet
 
+# Keyboard layout (Capslock set to ESC)
+exec_always --no-startup-id setxkbmap -model pc86 -layout us -variant altgr-intl -option caps:escape
+
+exec --no-startup-id dunst
+
 # # Sreen brightness controls
-bindsym XF86MonBrightnessUp exec bash ~/.config/dunst/brightness.sh up
-bindsym XF86MonBrightnessDown exec bash ~/.config/dunst/brightness.sh down
+bindsym XF86MonBrightnessUp exec --no-startup-id bash ~/.config/dunst/brightness.sh up
+bindsym XF86MonBrightnessDown exec --no-startup-id bash ~/.config/dunst/brightness.sh down
 
 # # Media player controls
-bindsym XF86AudioPlay exec playerctl play
-bindsym XF86AudioPause exec playerctl pause
-bindsym XF86AudioNext exec playerctl next
-bindsym XF86AudioPrev exec playerctl previous
+bindsym XF86AudioPlay exec --no-startup-id playerctl play
+bindsym XF86AudioPause exec --no-startup-id playerctl pause
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
 
-bindsym XF86AudioRaiseVolume exec bash ~/.config/dunst/volp.sh up
-bindsym XF86AudioLowerVolume exec bash ~/.config/dunst/volp.sh down
-bindsym XF86AudioMute exec bash ~/.config/dunst/volp.sh mute
+bindsym XF86AudioRaiseVolume exec --no-startup-id bash ~/.config/dunst/volp.sh up
+bindsym XF86AudioLowerVolume exec --no-startup-id bash ~/.config/dunst/volp.sh down
+bindsym XF86AudioMute exec --no-startup-id bash ~/.config/dunst/volp.sh mute
 
 # Lockscreen
 exec --no-startup-id betterlockscreen -u $wallpaper_path
-bindsym $mod+Shift+x exec betterlockscreen -l blur
+bindsym $mod+Shift+x exec --no-startup-id betterlockscreen -l blur
 
 # Print screen for screenshots
-bindsym Print exec scrot -q 100 '%S:%M:%H_%Y-%m-%d_$wx$h.png' -e 'mkdir --parents $screenshots_path  && mv $f $screenshots_path && dunstify "Screenshot Captured!!" "File : $screenshots_path/$f"'
+bindsym Print exec --no-startup-id scrot -q 100 '%S:%M:%H_%Y-%m-%d_$wx$h.png' -e 'mkdir --parents $screenshots_path  && mv $f $screenshots_path && dunstify "Screenshot Captured!!" "File : $screenshots_path/$f"'
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
@@ -127,6 +132,12 @@ bindsym $mod+Control+j workspace next
 bindsym $mod+Control+k workspace prev
 bindsym $mod+Tab workspace back_and_forth
 bindsym $mod+Shift+Tab move container to workspace back_and_forth
+
+# Move workspace to different a display
+bindsym $mod+Shift+Control+l move workspace to output right
+bindsym $mod+Shift+Control+h move workspace to output left
+bindsym $mod+Shift+Control+j move workspace to output down
+bindsym $mod+Shift+Control+k move workspace to output up
 
 # focus the parent container
 bindsym $mod+a focus parent
