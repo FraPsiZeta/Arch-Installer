@@ -3,8 +3,7 @@
 INTERACTIVE="yup"
 
 _assert_root() {
-    if [ "$EUID" -ne 0 ]
-    then
+    if [ "$EUID" -ne 0 ]; then
         printf "You need root privileges to execute this script.\n"
         exit 6
     fi
@@ -12,24 +11,71 @@ _assert_root() {
 
 #: $1 Username
 #: $2.. Command to execute
-su() {
+with_su() {
     check_user_arg $1 || exit 5
     local user="$1"
     shift
     sudo -u "$user" "$@"
 }
 
-confirm() {
-    # call with a prompt string or use a default
-    read -r -p "${1:-Are you sure? [y/N]} " response
-    case "$response" in
-        [yY][eE][sS]|[yY])
-            true
-            ;;
-        *)
-            false
-            ;;
-    esac
+
+_confirm() {
+    while true; do
+        read -r -p "${1:-Are you sure? [y/N]} " response
+        case $response in
+            [yY][eE][sS]|[yY])
+                return true
+                ;;
+            [Nn][oO]|[Nn])
+                return false
+                ;;
+            *)
+                printf "Please answer yes or no.\n"
+                ;;
+        esac
+    done
+
+    return false
+}
+
+# $1: EFI partition
+# $1: Boot options
+systemdboot_setup(){
+    [ -z "$1" ] || [ -z "$2" ] && printf "ERROR: Boot options and EFI partition required!\n" && exit 7
+
+    local efi_path="/boot/efi"
+    mkdir -p "$efi_path"
+    umount "$efi_path" 2>/dev/null
+    mount "$1" "$efi_path" || printf "ERROR: Unable to mount EFI partition $1\n" && exit 8
+    local entry="arch"
+
+    bootctl --path="$efi_path" install
+    echo "default $entry" > "$efi_path/loader/loader.conf"
+    cat > "$efi_path/loader/entries/$entry.conf" <<EOF
+title Arch Linux
+linux /vmlinuz-linux
+initrd /initramfs-linux.img
+options $2
+EOF
+}
+
+# $1: EFI partition
+simple_systemdboot_setup() {
+    local uuid=$(find_root_uuid)
+    [ -z "$uuid" ] && printf "ERROR: Unable to find UUID of root partition.\n" && exit 7
+
+    systemdboot_setup "$1" "root=UUID=$uuid rw quiet splash"
+
+}
+
+# $1: EFI partition
+# $2: LVM root volume path (like: /dev/volume/root)
+encrypted_systemdboot_setup() {
+    local uuid=$(find_root_uuid)
+    [ -z "$uuid" ] && printf "ERROR: Unable to find UUID of root partition.\n" && exit 7
+
+    systemdboot_setup "$1" "cryptdevice=UUID=$uuid:cryptlvm root=$2 quiet rw"
+
 }
 
 # $1: Source directory
@@ -45,15 +91,13 @@ check_user_arg() {
 
     local found=$(cut -d: -f1 /etc/passwd | while read -r user
     do
-        if [ "$1" = "$user" ]
-        then
+        if [ "$1" = "$user" ]; then
             printf "gotit"
             break
         fi
     done)
 
-    if [ -z $found ]
-    then
+    if [ -z $found ]; then
         printf "User \'$1\' not found.\n"
         return 4
     fi
@@ -61,8 +105,7 @@ check_user_arg() {
 }
 
 yay_install() {
-    if [ $INTERACTIVE ]
-    then
+    if [ $INTERACTIVE ]; then
         yay -Sy --answerclean All --answerdiff None "$@"
     else
         yay -Sy --noconfirm --answerclean All --answerdiff None "$@"
@@ -70,8 +113,7 @@ yay_install() {
 }
 
 yay_uninstall() {
-    if [ $INTERACTIVE ]
-    then
+    if [ $INTERACTIVE ]; then
         yay -Rsc --answerclean All --answerdiff None "$@"
     else
         yay -Rsc --noconfirm --answerclean All --answerdiff None "$@"
@@ -79,8 +121,7 @@ yay_uninstall() {
 }
 
 pacman_install() {
-    if [ $INTERACTIVE ]
-    then
+    if [ $INTERACTIVE ]; then
         pacman -Sy --needed "$@"
     else
         pacman --noconfirm -Sy --needed "$@"
@@ -89,12 +130,12 @@ pacman_install() {
 
 #: $1 User for whom call systemctl
 systemctl_user() {
-    su $1 systemctl --user $2 $3
+    with_su $1 systemctl --user $2 $3
 }
 
 #: $1 Extension path
 get_ff_extension_id() {
-    local installation_folder="$TMP_INSTALL_FOLDER/.tmp_extension"
+    local installation_folder="/tmp/.tmp_extension"
 
     rm -rf "$installation_folder"
     mkdir "$installation_folder" && unzip -d "$installation_folder" "$1" 1>/dev/null
@@ -105,16 +146,7 @@ get_ff_extension_id() {
 
 find_root_uuid() {
     local dev=$(sed -n 's#^\([^[[:space:]]\+\)[[:space:]]\+/ .*#\1#p' /etc/mtab)
-
-    for uuid in /dev/disk/by-uuid/*
-    do
-        if [ "$(readlink -f $uuid)" = "$dev" ]
-        then
-            basename $uuid
-            break
-        fi
-    done
-
+    blkid "$dev" | sed -n 's/.* UUID="\([^"]*\)".*/\1/p'
 }
 
 # Installs the entire content of $1 inside $2.
@@ -124,7 +156,20 @@ find_root_uuid() {
 install_dir() {
     cd "$1"
     printf "Installing content of $1 in $2\n"
+    mkdir -p "$2"
     find . -type f -exec cp -rp --parents '{}' "$2" \;
+    cd -
+}
+
+# Installs the entire content of $1 inside $2.
+# Empty directory will not get copied over.
+# $1: Source directory
+# $2: Target directory
+sudo_install_dir() {
+    cd "$1"
+    printf "Installing content of $1 in $2\n"
+    sudo mkdir -p "$2"
+    sudo find . -type f -exec cp -rp --parents '{}' "$2" \;
     cd -
 }
 
@@ -138,5 +183,18 @@ uninstall_dir() {
     find . -type f -exec rm "$2/"'{}' \;
     # Removing empty directories left behind
     find . ! -path . -type d -exec bash -c 'rm -d '"$2"'/{}' \; 2>/dev/null
+    cd -
+}
+
+
+# $1: Source directory from which files got installed
+# $2: Target directory where where files will get removed.
+sudo_uninstall_dir() {
+    cd "$1"
+    printf "Removing content of $1 from $2\n"
+    # Removing installed files
+    sudo find . -type f -exec rm "$2/"'{}' \;
+    # Removing empty directories left behind
+    sudo find . ! -path . -type d -exec bash -c 'rm -d '"$2"'/{}' \; 2>/dev/null
     cd -
 }

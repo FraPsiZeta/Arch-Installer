@@ -1,18 +1,11 @@
 #!/bin/bash
 
-systemdboot_setup(){
-    local boot_path="/boot"
-    local entry="arch"
-    local uuid=$(_find_root_uuid)
+ROOT_PATH="$(realpath $(dirname $BASH_SOURCE))/.."
+source "$ROOT_PATH/utils.sh"
 
-    bootctl --path="$boot_path" install
-    echo "default $entry" > "$boot_path/loader/loader.conf"
-    cat > '"$boot_path/loader/entries/$entry.conf"' <<EOF
-title Arch Linux
-linux /vmlinuz-linux
-initrd /initramfs-linux.img
-options root=UUID='"$uuid"' rw quiet splash acpi_osi=Darwin acpi_mask_gpe=0x06
-EOF
+
+mbp_systemdboot_setup(){
+    systemdboot_setup "rw quiet splash acpi_osi=Darwin acpi_mask_gpe=0x06"
 }
 
 setup_wifi() {
