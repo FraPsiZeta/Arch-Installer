@@ -161,6 +161,15 @@ install_dir() {
     cd -
 }
 
+# Links the entire content of $1 inside $2.
+# $1: Source directory
+# $2: Target directory
+link_dir() {
+    printf "Linking content of $1 in $2\n"
+    cp -as $(realpath "$1"/.[^.]*) $2
+    cp -as $(realpath "$1"/*) $2
+}
+
 # Installs the entire content of $1 inside $2.
 # Empty directory will not get copied over.
 # $1: Source directory

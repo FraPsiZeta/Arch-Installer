@@ -22,7 +22,7 @@ I3_PACKAGES=(
 
 
 _install_configuration_files() {
-    install_dir "$PKG_CONFIG_PATH" "$HOME_CONFIG_PATH"
+    link_dir "$PKG_CONFIG_PATH" "$HOME_CONFIG_PATH"
 }
 
 _rm_configuration_files() {
@@ -38,7 +38,7 @@ _rm_common_files() {
 }
 
 _install_home_dotfiles() {
-    install_dir "$PKG_HOME_PATH" "$HOME"
+    link_dir "$PKG_HOME_PATH" "$HOME"
 }
 
 _rm_home_dotfiles() {
