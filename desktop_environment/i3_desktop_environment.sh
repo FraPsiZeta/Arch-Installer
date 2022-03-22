@@ -16,7 +16,7 @@ I3_PACKAGES=(
     "i3-gaps" "sddm" "xorg-xinit" "polybar" "nerd-fonts-complete" "rofi"
     "alacritty" "picom" "feh" "xorg-xrandr" "autorandr" "scrot"
     "betterlockscreen" "bluez-utils" "playerctl" "mpv" "dunst"
-    "alsa-utils" "light" "xss-lock" "papirus-icon-theme"
+    "alsa-utils" "light" "xss-lock" "papirus-icon-theme" "htop"
     "alsa-lib" "alsa-plugins" "network-manager-applet" "ranger"
 )
 
