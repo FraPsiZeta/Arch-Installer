@@ -19,6 +19,7 @@ set $mod Mod4
 # Some variables:
 set $screenshots_path "\$HOME/Pictures/screenshots"
 set $wallpaper_path "\$HOME/Pictures/wallpapers/wallpaper.jpg"
+set $lockscreen_wallpaper_path "\$HOME/Pictures/wallpapers/lock_wallpaper.jpg"
 set $resize_step 1
 
 # Turn borders on

@@ -6,7 +6,7 @@ send_notification() {
 	BODY=$(cal "$1" | tail -n7 | sed -z "s|$TODAY|<u><b>$TODAY</b></u>|1")
 	FOOT="\n<i>        ~ Calendar</i>  "
 	dunstify -t 15000 -h string:x-canonical-private-synchronous:calendar \
-		"$HEAD" "$BODY$FOOT" -u NORMAL
+		"" "<span size=\"155%\"><b>$HEAD</b>\n$BODY$FOOT</span>" -u NORMAL
 }
 
 handle_action() {
