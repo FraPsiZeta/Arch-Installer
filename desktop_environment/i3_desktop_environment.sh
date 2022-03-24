@@ -18,6 +18,7 @@ I3_PACKAGES=(
     "betterlockscreen" "bluez-utils" "playerctl" "mpv" "dunst"
     "alsa-utils" "light" "xss-lock" "papirus-icon-theme" "htop"
     "alsa-lib" "alsa-plugins" "network-manager-applet" "ranger"
+    "nordic-theme"
 )
 
 

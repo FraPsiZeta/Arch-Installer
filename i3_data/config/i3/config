@@ -23,14 +23,14 @@ set $lockscreen_wallpaper_path "\$HOME/Pictures/wallpapers/lock_wallpaper.jpg"
 set $resize_step 1
 
 # Turn borders on
-for_window [class="^.*"] border pixel 2
+for_window [class="^.*"] border pixel 0
 
 # Set inner/outer gaps
 gaps inner 15
 gaps outer 5
 gaps top   27
 #smart_gaps on
-smart_borders on
+#smart_borders on
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -201,6 +201,7 @@ for_window [class="."] focus
 # Applications bindings
 bindsym $mod+w exec --no-startup-id firefox
 bindsym $mod+e exec --no-startup-id bash -i -c "emacs"
+bindsym $mod+s exec --no-startup-id i3-sensible-terminal -e ranger
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -229,7 +230,7 @@ bindsym $mod+r mode "resize"
 exec_always --no-startup-id $HOME/.config/i3/setwallpaper.sh
 
 # Compositor
-exec_always --no-startup-id pkill picom; picom --no-use-damage
+exec_always --no-startup-id pkill picom; picom --no-use-damage --experimental-backends
 
 #Theme
 set $bgcolor #2e3440

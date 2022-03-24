@@ -12,7 +12,7 @@ BASE_PACKAGES=(
 )
 
 APPLICATION_PACKAGES=(
-    "firefox" "thunderbird" "spectacle" "mupdf"
+    "firefox" "thunderbird" "spectacle" "zathura-pdf-mupdf"
     "gimp" "emacs"  "pass" "firefox-extension-passff"
     "nodejs" "firefox-tridactyl"
 )
