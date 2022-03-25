@@ -4,9 +4,9 @@ send_notification() {
 	TODAY=$(date '+%-d')
 	HEAD=$(cal "$1" | head -n1)
 	BODY=$(cal "$1" | tail -n7 | sed -z "s|$TODAY|<u><b>$TODAY</b></u>|1")
-	FOOT="\n<i>        ~ Calendar</i>  "
+	FOOT="\n<span size=\"120%\"><i>            ~ Calendar</i>  </span>"
 	dunstify -t 15000 -h string:x-canonical-private-synchronous:calendar \
-		"" "<span size=\"155%\"><b>$HEAD</b>\n$BODY$FOOT</span>" -u NORMAL
+		"" "<span size=\"160%\"><b>$HEAD</b>\n$BODY</span>$FOOT" -u NORMAL
 }
 
 handle_action() {
