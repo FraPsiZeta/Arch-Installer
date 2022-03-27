@@ -3,6 +3,8 @@
 ROOT_PATH="$(realpath $(dirname $BASH_SOURCE))"
 source "$ROOT_PATH/utils.sh"
 
+BASE_DATA_PATH="$ROOT_PATH/base_data"
+BASE_HOME_PATH="$BASE_DATA_PATH/home"
 
 BASE_PACKAGES=(
     "base" "base-devel" "openssh" "linux-headers"
@@ -99,4 +101,8 @@ install_networkmanager() {
     pacman_install networkmanager
     systemctl start NetworkManager
     systemctl enable NetworkManager
+}
+
+install_home_dotfiles() {
+    link_dir "$BASE_HOME_PATH" "$HOME"
 }
