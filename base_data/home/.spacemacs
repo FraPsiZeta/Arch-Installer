@@ -635,6 +635,9 @@ before packages are loaded."
   ;; Kill buffer when killing layer with [SPC-l-x]
   (customize-set-variable 'persp-autokill-buffer-on-remove 'kill-weak)
 
+  ;; Do not ask when following symlinks, just warn.
+  (customize-set-variable 'vc-follow-symlinks nil)
+
   ;; Hide special buffers, still shown with [SPC-b-U]
   (add-to-list 'spacemacs-useless-buffers-regexp '"^*")
 
@@ -871,49 +874,3 @@ before packages are loaded."
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(blacken-line-length 79 t)
- '(c-basic-offset 4)
- '(dap-ui-controls-mode t nil (dap-ui))
- '(dap-ui-mode t nil (dap-ui))
- '(evil-escape-delay 0.1)
- '(evil-want-Y-yank-to-eol nil)
- '(flycheck-disabled-checkers '(python-flake8))
- '(flycheck-indication-mode 'left-margin)
- '(helm-ag-ignore-patterns
-   '("*.ld" "*.egg-info*" "*dist" "build*" "*__pycache__" "*.pytest_cache" "*venv" "*.venv" "*bin" "*docs" "*target" "*.mypy_cache" ".idea" ".vscode" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" ".ccls-cache" ".cache" ".clangd") t)
- '(lsp-clients-clangd-args
-   '("--header-insertion-decorators=0" "-j=4" "--clang-tidy" "--background-index" "--header-insertion=never"))
- '(lsp-diagnostics-disabled-modes '(python-mode))
- '(lsp-file-watch-threshold nil)
- '(lsp-headerline-breadcrumb-enable-diagnostics nil)
- '(lsp-rust-analyzer-server-display-inlay-hints t)
- '(lsp-rust-server 'rust-analyzer)
- '(lsp-semantic-tokens-enable t)
- '(lsp-ui-doc-show-with-cursor t)
- '(lsp-ui-doc-show-with-mouse nil)
- '(package-selected-packages
-   '(flycheck-clang-analyzer helm-exwm evil-exwm-state desktop-environment exwm yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum which-key web-mode web-beautify vterm volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toml-mode toc-org terminal-here tagedit systemd symon symbol-overlay string-inflection string-edit sphinx-doc spaceline-all-the-icons smeargle slim-mode shell-pop scss-mode sass-mode ron-mode restart-emacs realgud rainbow-delimiters racer quickrun pytest pyenv-mode pydoc py-isort pug-mode prettier-js popwin poetry pippel pipenv pip-requirements pdf-view-restore pcre2el password-generator paradox overseer orgit-forge org-superstar org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file npm-mode nose nord-theme nodejs-repl nameless mwim multi-term multi-line mmm-mode markdown-toc macrostep lsp-ui lsp-python-ms lsp-pyright lsp-origami lorem-ipsum livid-mode live-py-mode link-hint json-reformat json-navigator js2-refactor js-doc journalctl-mode inspector insert-shebang info+ indent-guide importmagic impatient-mode hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link gh-md gendoxy fuzzy font-lock+ flycheck-ycmd flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-package flycheck-elsa flycheck-bashate flx-ido fish-mode fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-terminal-cursor-changer evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emr emmet-mode elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dockerfile-mode docker disaster dired-quick-sort diminish diff-hl devdocs define-word dap-mode cython-mode csv-mode cpp-auto-include company-ycmd company-web company-shell company-rtags company-quickhelp company-c-headers company-anaconda column-enforce-mode cmake-mode clean-aindent-mode centered-cursor-mode ccls cargo browse-at-remote blacken better-jumper auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell))
- '(persp-autokill-buffer-on-remove 'kill-weak)
- '(projectile-enable-caching t)
- '(projectile-git-command "fd . -0 --type f --color=never")
- '(projectile-indexing-method 'hybrid)
- '(projectile-svn-command "fd . -0 --type f --color=never")
- '(projectile-track-known-projects-automatically nil)
- '(treemacs-position 'right))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(highlight-parentheses-highlight ((nil (:weight ultra-bold))) t))
-)

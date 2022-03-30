@@ -57,14 +57,15 @@ exec_always --no-startup-id xset r rate 200 45
 
 # Polyabr launch
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
-exec --no-startup-id nm-applet
+#exec --no-startup-id nm-applet
 
 # Keyboard layout (Capslock set to ESC)
 exec_always --no-startup-id setxkbmap -model pc86 -layout us -variant altgr-intl -option caps:escape
 
-exec --no-startup-id dunst
+exec_always --no-startup-id dunst
 
 # # Sreen brightness controls
 bindsym XF86MonBrightnessUp exec --no-startup-id bash ~/.config/dunst/brightness.sh up
@@ -191,7 +192,7 @@ for_window [class="Zulip"] move to workspace $ws4
 for_window [class="Skype"] move to workspace $ws4
 
 # Floating windows
-for_window [class="Nm-connection-editor"] floating enable resize set 50 ppt 50 ppt
+for_window [class="Pavucontrol"] floating enable resize set 30 ppt 30 ppt
 for_window [title="^htop-float$"] floating enable resize set 50 ppt 50 ppt
 for_window [title="^nmtui-float$"] floating enable resize set 50 ppt 50 ppt
 
