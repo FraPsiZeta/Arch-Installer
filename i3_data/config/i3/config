@@ -135,6 +135,8 @@ bindsym $mod+space focus mode_toggle
 # switch between the current and the previously focused one
 bindsym $mod+Control+j workspace next
 bindsym $mod+Control+k workspace prev
+bindsym $mod+Control+h workspace prev_on_output
+bindsym $mod+Control+l workspace next_on_output
 bindsym $mod+Tab workspace back_and_forth
 bindsym $mod+Shift+Tab move container to workspace back_and_forth
 
@@ -193,8 +195,7 @@ for_window [class="Skype"] move to workspace $ws4
 
 # Floating windows
 for_window [class="Pavucontrol"] floating enable resize set 30 ppt 30 ppt
-for_window [title="^htop-float$"] floating enable resize set 50 ppt 50 ppt
-for_window [title="^nmtui-float$"] floating enable resize set 50 ppt 50 ppt
+for_window [title="^[^-]*-float$"] floating enable resize set 50 ppt 50 ppt
 
 # Focus on opened windows
 for_window [class="."] focus
@@ -202,7 +203,7 @@ for_window [class="."] focus
 # Applications bindings
 bindsym $mod+w exec --no-startup-id firefox
 bindsym $mod+e exec --no-startup-id bash -i -c "emacs"
-bindsym $mod+s exec --no-startup-id i3-sensible-terminal -e ranger
+bindsym $mod+s exec --no-startup-id i3-sensible-terminal -t "ranger-float" -e "ranger"
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
