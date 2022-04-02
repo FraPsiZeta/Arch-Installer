@@ -1,0 +1,11 @@
+gtk-can-change-accels = 1
+
+gtk-icon-theme-name = "Papirus-Dark-nordic-blue-folders"
+gtk-theme-name = "Nordic"
+
+style "user-font"
+{
+        font_name="Hack Nerd Font"
+}
+widget_class "*" style "user-font"
+gtk-font-name = "Hack Nerd Font"
