@@ -15,6 +15,7 @@
 #--------------------------------------------------------------------- #
 
 set $mod Mod4
+set $alt Mod1
 
 # Some variables:
 set $screenshots_path "\$HOME/Pictures/screenshots"
@@ -145,6 +146,12 @@ bindsym $mod+Shift+Control+l move workspace to output right
 bindsym $mod+Shift+Control+h move workspace to output left
 bindsym $mod+Shift+Control+j move workspace to output down
 bindsym $mod+Shift+Control+k move workspace to output up
+
+# Switch to a different display
+bindsym $mod+$alt+l focus output right
+bindsym $mod+$alt+h focus output left
+bindsym $mod+$alt+j focus output down
+bindsym $mod+$alt+k focus output up
 
 # focus the parent container
 bindsym $mod+a focus parent

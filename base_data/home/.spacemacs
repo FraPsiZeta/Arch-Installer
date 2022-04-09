@@ -742,6 +742,7 @@ before packages are loaded."
   ;; +---------+
 
   (with-eval-after-load 'org
+    (setq-default org-superstar-headline-bullets-list '("◉" "☉" "●" "○" "⚫" "◎" "○" "◌" "◎" "◦" "◯" "⚪" "⚬" "❍" "￮" "⊙" "⊚" "⊛" "∙" "∘"))
     (setq-default org-latex-caption-above nil)
     (setq-default org-latex-table-caption-above nil)
     (setq-default org-startup-indented t)
