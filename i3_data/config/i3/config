@@ -16,6 +16,7 @@
 
 set $mod Mod4
 set $alt Mod1
+set $term alacritty
 
 # Some variables:
 set $screenshots_path "\$HOME/Pictures/screenshots"
@@ -92,7 +93,7 @@ bindsym Print exec --no-startup-id scrot -q 100 '%S:%M:%H_%Y-%m-%d_$wx$h.png' -e
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec --no-startup-id i3-sensible-terminal
+bindsym $mod+Return exec --no-startup-id $term
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -202,15 +203,19 @@ for_window [class="Skype"] move to workspace $ws4
 
 # Floating windows
 for_window [class="Pavucontrol"] floating enable resize set 30 ppt 30 ppt
-for_window [title="^[^-]*-float$"] floating enable resize set 50 ppt 50 ppt
+for_window [title="^[^-]*-float$"] floating enable resize set 60 ppt 60 ppt
 
 # Focus on opened windows
 for_window [class="."] focus
 
+# Border highlight for focused window
+for_window [class="^.*"] border pixel 4
+
+
 # Applications bindings
 bindsym $mod+w exec --no-startup-id firefox
 bindsym $mod+e exec --no-startup-id bash -i -c "emacs"
-bindsym $mod+s exec --no-startup-id i3-sensible-terminal -t "ranger-float" -e "ranger"
+bindsym $mod+s exec --no-startup-id $term -t "ranger-float" -e "ranger"
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -243,6 +248,7 @@ exec_always --no-startup-id pkill picom; picom --no-use-damage --experimental-ba
 
 #Theme
 set $bgcolor #2e3440
+set $bordercolor #eceff4
 set $ibgcolor #3b4252
 set $textcolor #eceff4
 set $itextcolor #4c566a

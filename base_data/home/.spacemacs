@@ -94,7 +94,6 @@ This function should only modify configuration layer settings."
      spacemacs-navigation
      lsp
      dap
-     org
      docker
      debug
      html
@@ -134,8 +133,7 @@ This function should only modify configuration layer settings."
    ;; installs only the used packages but won't delete unused ones. `all'
    ;; installs *all* packages supported by Spacemacs and never uninstalls them.
    ;; (default is `used-only')
-   dotspacemacs-install-packages 'used-only)
-)
+   dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
   "Initialization:
@@ -178,7 +176,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    ;; (default 5)
-   dotspacemacs-elpa-timeout 5
+   dotspacemacs-elpa-timeout 300
 
    ;; Set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
    ;; This is an advanced option and should not be changed unless you suspect
@@ -235,6 +233,13 @@ It should only modify the values of Spacemacs settings."
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
    dotspacemacs-startup-banner 'official
+
+   ;; Scale factor controls the scaling (size) of the startup banner. Default
+   ;; value is `auto' for scaling the logo automatically to fit all buffer
+   ;; contents, to a maximum of the full image height and a minimum of 3 line
+   ;; heights. If set to a number (int or float) it is used as a constant
+   ;; scaling factor for the default logo size.
+   dotspacemacs-startup-banner-scale 'auto
 
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
@@ -411,8 +416,8 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-maximized-at-startup nil
 
    ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
-   ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
-   ;; borderless fullscreen. (default nil)
+   ;; variable with `dotspacemacs-maximized-at-startup' to obtain fullscreen
+   ;; without external boxes. Also disables the internal border. (default nil)
    dotspacemacs-undecorated-at-startup nil
 
    ;; A value from the range (0..100), in increasing opacity, which describes
@@ -424,6 +429,11 @@ It should only modify the values of Spacemacs settings."
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
    dotspacemacs-inactive-transparency 90
+
+   ;; A value from the range (0..100), in increasing opacity, which describes the
+   ;; transparency level of a frame background when it's active or selected. Transparency
+   ;; can be toggled through `toggle-background-transparency'. (default 90)
+   dotspacemacs-background-transparency 90
 
    ;; If non-nil show the titles of transient states. (default t)
    dotspacemacs-show-transient-state-title t
@@ -534,7 +544,9 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil - same as frame-title-format)
    dotspacemacs-icon-title-format nil
 
-   ;; Show trailing whitespace (default t)
+   ;; Color highlight trailing whitespace in all prog-mode and text-mode derived
+   ;; modes such as c++-mode, python-mode, emacs-lisp, html-mode, rst-mode etc.
+   ;; (default t)
    dotspacemacs-show-trailing-whitespace t
 
    ;; Delete whitespace while saving buffer. Possible values are `all'
@@ -575,8 +587,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-home-shorten-agenda-source nil
 
    ;; If non-nil then byte-compile some of Spacemacs files.
-   dotspacemacs-byte-compile nil)
-)
+   dotspacemacs-byte-compile nil))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -594,6 +605,12 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+
+  ;; Modes' hooks should be placed in user-init
+  (add-hook 'after-init-hook 'company-tng-mode)
+  ;; Added to solve company-tng init bug. Only the previous one should be necessary.
+  (add-hook 'prog-mode-hook
+            'company-tng-mode)
 )
 
 
@@ -623,11 +640,11 @@ before packages are loaded."
   ;; <C-i> problems
   (setq-default dotspacemacs-distinguish-gui-tab t)
 
-  ;; Inserting suggested completion with TAB
-  (company-tng-mode 1)
-
   ;; Cursor options
   ;; (global-centered-cursor-mode 1)
+
+  ;; Disable line wrap
+  (spacemacs/toggle-truncate-lines-on)
 
   ;; Prevent undo-tree from saving trees all over the place
   (customize-set-variable 'undo-tree-auto-save-history nil)
@@ -659,8 +676,8 @@ before packages are loaded."
   (spacemacs/set-leader-keys "pn" 'projectile-next-project-buffer)
   (spacemacs/set-leader-keys "pN" 'projectile-previous-project-buffer)
 
-  (with-eval-after-load 'lsp-mode
-    (define-key lsp-command-map-prefix "ga" 'projectile-find-other-file))
+  ;; (with-eval-after-load 'lsp-mode
+  ;;   (define-key lsp-command-map-prefix "ga" 'projectile-find-other-file))
 
   ;; +---------+
   ;; |   LSP   |
@@ -670,9 +687,9 @@ before packages are loaded."
   (customize-set-variable 'lsp-file-watch-threshold nil)
   (customize-set-variable 'lsp-diagnostics-disabled-modes '(python-mode))
   (customize-set-variable 'lsp-clients-clangd-args
-                          '("--header-insertion-decorators=0"
+                          '("--clang-tidy"
+                            "--header-insertion-decorators=0"
                             "-j=4"
-                            "--clang-tidy"
                             "--background-index"
                             "--header-insertion=never"))
   (customize-set-variable 'lsp-headerline-breadcrumb-enable-diagnostics nil)
@@ -742,13 +759,23 @@ before packages are loaded."
   ;; +---------+
 
   (with-eval-after-load 'org
-    (setq-default org-superstar-headline-bullets-list '("◉" "☉" "●" "○" "⚫" "◎" "○" "◌" "◎" "◦" "◯" "⚪" "⚬" "❍" "￮" "⊙" "⊚" "⊛" "∙" "∘"))
+    (setq-default org-superstar-headline-bullets-list
+                  '("◉" "☉" "●" "○" "⚫" "◎" "○" "◌" "◎" "◦" "◯" "⚪" "⚬" "❍" "￮" "⊙" "⊚" "⊛" "∙" "∘"))
     (setq-default org-latex-caption-above nil)
     (setq-default org-latex-table-caption-above nil)
+    ;; Latex-org
+    (add-to-list 'org-latex-packages-alist '("" "listings" nil))
+    (setq-default org-latex-listings t)
+    (setq-default org-latex-listings-options '(("breaklines" "true")
+                                               ("showstringspaces" "false")))
+    ;;=========================
     (setq-default org-startup-indented t)
     (setq-default org-directory "~/Documents/org")
     (setq-default org-default-notes-file (concat org-directory "/notes.org"))
-    (setq-default org-agenda-files (list (concat org-directory "/agenda.org")))
+    (setq-default org-agenda-files (flatten-tree
+                                    (list
+                                     (concat org-directory "/agenda.org")
+                                     (file-expand-wildcards "~/software/sadel/agenda/*.org"))))
     (setq-default org-projectile-capture-template
                   (concat "* TODO [[file:%(my-org-capture-relative-name)::"
                           "%(my-org-line-number)][%(my-org-capture-relative-name):"
@@ -793,7 +820,7 @@ before packages are loaded."
   (with-eval-after-load 'projectile
     (mapc (lambda (x)
             (add-to-list 'projectile-globally-ignored-directories x))
-          '("*.mypy_cache" "*target" "*docs" "*bin" "*.venv" "*venv" "*.pytest_cache" "*__pycache__" "build*" "*dist" "*.egg-info*" "*.ld"))
+          '("*.mypy_cache" "*target" "*docs" "doxydoc" "*bin" "*.venv" "*venv" "*.pytest_cache" "*__pycache__" "*build_Test" "*build_Debug" "*build_Release" "build" "*dist" "*.egg-info*" "*.ld"))
     (customize-set-variable 'projectile-indexing-method 'hybrid)
     (customize-set-variable 'projectile-enable-caching t)
     (customize-set-variable 'projectile-track-known-projects-automatically nil)
@@ -875,3 +902,22 @@ before packages are loaded."
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package unfill undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toml-mode toc-org terminal-here term-cursor tagedit systemd symon symbol-overlay string-inflection string-edit-at-point sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline-all-the-icons space-doc smeargle slim-mode shfmt shell-pop scss-mode sass-mode rust-mode ron-mode restart-emacs realgud rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort pug-mode prettier-js popwin poetry pippel pipenv pip-requirements pdf-view-restore pcre2el password-generator paradox overseer orgit-forge org-superstar org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file npm-mode nose nord-theme nodejs-repl nameless mwim multi-vterm multi-term multi-line mmm-mode markdown-toc macrostep lsp-ui lsp-python-ms lsp-pyright lsp-origami lorem-ipsum livid-mode live-py-mode link-hint json-reformat json-navigator json-mode js2-refactor js-doc journalctl-mode inspector insert-shebang info+ indent-guide importmagic impatient-mode hybrid-mode hungry-delete holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link gh-md gendoxy fuzzy font-lock+ flycheck-ycmd flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-package flycheck-elsa flycheck-bashate flx-ido fish-mode fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help emr emmet-mode elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dockerfile-mode docker-tramp docker disaster dired-quick-sort diminish diff-hl devdocs define-word dap-mode cython-mode csv-mode cpp-auto-include company-ycmd company-web company-shell company-rtags company-quickhelp company-c-headers company-anaconda column-enforce-mode code-cells cmake-mode clean-aindent-mode centered-cursor-mode ccls cargo browse-at-remote blacken better-jumper auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+)

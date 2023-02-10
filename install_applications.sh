@@ -24,7 +24,7 @@ install_base() {
 }
 
 install_applications() {
-    # Needed to avoid gpg keys broken after first install
+    # Needed to avoid gpg broken keys after first install
     pacman_install "archlinux-keyring"
     pacman_install "${APPLICATION_PACKAGES[@]}"
     install_networkmanager

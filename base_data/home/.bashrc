@@ -1,3 +1,5 @@
+export TERMINAL="alacritty"
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -7,8 +9,12 @@ emacs() {
     emacsclient -n --create-frame --alternate-editor="" $@
 }
 
-ed() {
+cim() {
     TERM=xterm-direct emacsclient -t -c --alternate-editor="" $@
+}
+
+ssw() {
+    sway-run
 }
 
 PROMPT_DIRTRIM=3
@@ -52,7 +58,6 @@ __prompt_command() {
 
 export PYTHONDONTWRITEBYTECODE="NeverAgain"
 
-export TERMINAL="alacritty"
 export EDITOR=vim
 export VISUAL=vim
 
@@ -75,11 +80,29 @@ PROMPT_COMMAND="$PROMPT_COMMAND;history -a"
 
 complete -cf sudo
 
+extract () {
+    if [ -f $1 ] ; then
+        case $1 in
+            *.tar.bz2)   tar xjf $1     ;;
+            *.tar.gz)    tar xzf $1     ;;
+            *.bz2)       bunzip2 $1     ;;
+            *.rar)       unrar e $1     ;;
+            *.gz)        gunzip $1      ;;
+            *.tar)       tar xf $1      ;;
+            *.tbz2)      tar xjf $1     ;;
+            *.tgz)       tar xzf $1     ;;
+            *.zip)       unzip $1       ;;
+            *.Z)         uncompress $1  ;;
+            *.7z)        7z x $1        ;;
+            *)     echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
 # Source extra runcom
-if [ -d ~/.bashrc_extra ]
-then
-    for f in ~/.bashrc_extra/* ~/.bashrc_extra/.[^.]*
-    do
-        if [ -f "$f" ]; then source "$f"; fi
-    done
+if [ -d ~/.bashrc_extra ]; then
+    for f in ~/.bashrc_extra/* ~/.bashrc_extra/.[^.]*; do
+        [ -f "$f" ] && source "$f"; done
 fi

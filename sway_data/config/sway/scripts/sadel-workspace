@@ -1,0 +1,27 @@
+#!/bin/bash
+
+swaycmd() {
+    swaymsg "$@" &>/dev/null
+    sleep 0.2
+}
+
+sleepcmd() {
+    $@ &>/dev/null &
+    sleep 0.8
+}
+
+swaycmd "workspace 1"
+sleepcmd $TERMINAL
+swaycmd "workspace 2"
+sleepcmd firefox
+swaycmd "workspace 3"
+sleepcmd emacs
+sleepcmd $TERMINAL
+swaycmd layout stacking
+swaycmd "workspace 4"
+sleepcmd teams
+sleepcmd zulip
+sleepcmd prospect-mail
+swaycmd layout stacking
+
+
