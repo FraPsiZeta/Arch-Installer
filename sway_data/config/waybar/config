@@ -139,7 +139,7 @@
     "custom/menu": {
         "format": "",
         "tooltip": false, 
-        "on-click": "$TERMINAL -t menu-float -e bash ~/.config/sway/scripts/app-menu"
+        "on-click": "$TERMINAL -t menu-float -e sway-launcher-desktop"
     }
 }
 

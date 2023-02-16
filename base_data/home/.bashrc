@@ -1,21 +1,44 @@
-export TERMINAL="alacritty"
-
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-alias ls='ls --color=auto'
-
-emacs() {
-    emacsclient -n --create-frame --alternate-editor="" $@
+em() {
+    emacs-client "$@"
 }
 
 cim() {
-    TERM=xterm-direct emacsclient -t -c --alternate-editor="" $@
+    emacs-client-tui "$@"
 }
+
+extract () {
+    if [ -f $1 ] ; then
+        case $1 in
+            *.tar.bz2)   tar xjf $1     ;;
+            *.tar.gz)    tar xzf $1     ;;
+            *.bz2)       bunzip2 $1     ;;
+            *.rar)       unrar e $1     ;;
+            *.gz)        gunzip $1      ;;
+            *.tar)       tar xf $1      ;;
+            *.tbz2)      tar xjf $1     ;;
+            *.tgz)       tar xzf $1     ;;
+            *.zip)       unzip $1       ;;
+            *.Z)         uncompress $1  ;;
+            *.7z)        7z x $1        ;;
+            *)     echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+
+alias ls="ls --color=auto"
+
 
 ssw() {
     sway-run
 }
+
+
 
 PROMPT_DIRTRIM=3
 PROMPT_COMMAND=__prompt_command
@@ -58,8 +81,6 @@ __prompt_command() {
 
 export PYTHONDONTWRITEBYTECODE="NeverAgain"
 
-export EDITOR=vim
-export VISUAL=vim
 
 # Eternal bash history.
 # ---------------------
@@ -80,29 +101,9 @@ PROMPT_COMMAND="$PROMPT_COMMAND;history -a"
 
 complete -cf sudo
 
-extract () {
-    if [ -f $1 ] ; then
-        case $1 in
-            *.tar.bz2)   tar xjf $1     ;;
-            *.tar.gz)    tar xzf $1     ;;
-            *.bz2)       bunzip2 $1     ;;
-            *.rar)       unrar e $1     ;;
-            *.gz)        gunzip $1      ;;
-            *.tar)       tar xf $1      ;;
-            *.tbz2)      tar xjf $1     ;;
-            *.tgz)       tar xzf $1     ;;
-            *.zip)       unzip $1       ;;
-            *.Z)         uncompress $1  ;;
-            *.7z)        7z x $1        ;;
-            *)     echo "'$1' cannot be extracted via extract()" ;;
-        esac
-    else
-        echo "'$1' is not a valid file"
-    fi
-}
-
 # Source extra runcom
-if [ -d ~/.bashrc_extra ]; then
-    for f in ~/.bashrc_extra/* ~/.bashrc_extra/.[^.]*; do
+EXTRA_RUNCOM="$HOME/.bashrc.d"
+if [ -d "$EXTRA_RUNCOM" ]; then
+    for f in "$EXTRA_RUNCOM"/* "$EXTRA_RUNCOM"/.[^.]*; do
         [ -f "$f" ] && source "$f"; done
 fi

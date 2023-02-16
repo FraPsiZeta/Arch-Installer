@@ -2,30 +2,36 @@
 
 export TERMINAL="alacritty"
 export BROWSER="firefox"
-export EDITOR="emacs"
-export XDG_CURRENT_DESKTOP="sway"
-export XDG_SESSION_TYPE="wayland"
-export XDG_SCREENSHOTS_DIR=~/Pictures/screenshots
+export EDITOR="emacs-client-tui"
+export VISUAL="emacs-client"
+
+export XDG_CURRENT_DESKTOP="sway" # xdg-desktop-portal
+export XDG_SESSION_DESKTOP="sway" # systemd
+export XDG_SESSION_TYPE="wayland" # xdg/systemd
+export XDG_SCREENSHOTS_DIR="$HOME/Pictures/screenshots"
+
 export QT_QPA_PLATFORM="wayland"
 export QT_QPA_PLATFORMTHEME="qt5ct"
 export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+
 export CLUTTER_BACKEND="wayland"
 export SDL_VIDEODRIVER="wayland"
-# export GDK_BACKEND="wayland"
-export MOZ_ENABLE_WAYLAND=1
+export GDK_BACKEND="wayland"
+
 export MOZ_ENABLE_WAYLAND=1
 export MOZ_WEBRENDER=1
 export MOZ_ACCELERATED=1
 export MOZ_DBUS_REMOTE=1
 
 export _JAVA_AWT_WM_NONREPARENTING=1
+export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
 
+# Find integrated card, fixes NVDIA incompatibilities (freezes)
 for i in /dev/dri/card*; do
     is_integrated=$(udevadm info -a -n $i 2>/dev/null | grep boot_vga | rev | cut -c 2)
     if [ ! -z "$is_integrated" ]; then
-        WLR_DRM_DEVICES="$i" sway
-        exit 0
+       __dri_dev_name__="$i"
     fi
 done
 
-sway
+WLR_DRM_DEVICES="$__dri_dev_name__" sway

@@ -3,18 +3,19 @@ set $alt Mod1
 set $term $TERMINAL
 
 # Some variables:
-set $screenshots_path "\$HOME/Pictures/screenshots"
-set $wallpaper_path "~/Pictures/wallpapers/wallpaper.jpg"
-set $wallpaper_lock_path "~/Pictures/wallpapers/lock_wallpaper.jpg"
-set $scripts_path ~/.config/sway/scripts
+set $wallpaper_path $HOME/Pictures/wallpapers/wallpaper.jpg
+set $wallpaper_lock_path $HOME/Pictures/wallpapers/lock_wallpaper.jpg
+set $scripts_path $HOME/.config/sway/scripts
 set $resize_step 1
 
 
+# DIsplays setup: should be in a separate config
 output {
-    DP-4 pos 0 0
-    DP-5 pos 1920 0
+    'Philips Consumer Electronics Company PHL 272B1 UK02027015042' pos 0 0
+    'Philips Consumer Electronics Company PHL 272B1 UK02031006411' pos 1920 0
     eDP-1 pos 930 1080
 }
+focus output eDP-1
 
 default_border pixel 3
 
@@ -54,6 +55,10 @@ set $lock "swaylock -e -f -i $wallpaper_lock_path  --indicator-x-position 150 --
 
 bindsym $mod+Shift+x exec $lock
 
+# For screen sharing https://wiki.archlinux.org/title/PipeWire#WebRTC_screen_sharing 
+exec systemctl --user import-environment XDG_CURRENT_DESKTOP WAYLAND_DISPLAY
+
+# Idle settings
 exec swayidle -w \
          timeout 300 $lock \
          timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
@@ -78,8 +83,6 @@ bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
 bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 
-# Print screen for screenshots
-# bindsym Print exec  scrot -q 100 '%S:%M:%H_%Y-%m-%d_$wx$h.png' -e 'mkdir --parents $screenshots_path  && mv $f $screenshots_path && dunstify "Screenshot Captured!!" "File : $screenshots_path/$f"'
 # Screenshots
 bindsym --to-code  {
    print exec /usr/share/sway/scripts/grimshot --notify save output
@@ -217,15 +220,12 @@ for_window [title="^[^-]*-float$"] floating enable, resize set 70 ppt 70 ppt
 # Focus on opened windows
 for_window [class="."] focus
 
-# Border highlight for focused window
-# for_window [class="^.*"] border pixel 4
-
 
 # Applications bindings
 bindsym $mod+w exec  firefox
-bindsym $mod+e exec  bash -i -c "emacs"
+bindsym $mod+e exec  emacs-client
 bindsym $mod+s exec  $term -t "ranger-float" -e "ranger"
-bindsym $mod+d exec  $term -t "menu-float" -e bash $scripts_path/app-menu
+bindsym $mod+d exec  $term -t "menu-float" -e bash sway-launcher-desktop
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -263,8 +263,10 @@ set $itextcolor #4c566a
 set $ubgcolor #bf616a
 
 #                         border        background      text         indicator
-client.focused		        $bordercolor	$bordercolor	  $textcolor	 $bgcolor
-client.unfocused	        $ibgcolor	    $bgcolor        $itextcolor  $ibgcolor
-client.focused_inactive	  $ibgcolor	    $bgcolor	      $itextcolor  $ibgcolor
-client.urgent		          $ubgcolor	    $ubgcolor	      $textcolor	 $ubgcolor
+client.focused		      $bordercolor	$bordercolor	$textcolor	 $bgcolor
+client.unfocused	      $ibgcolor	    $bgcolor        $itextcolor  $ibgcolor
+client.focused_inactive	  $ibgcolor	    $bgcolor	    $itextcolor  $ibgcolor
+client.urgent		      $ubgcolor	    $ubgcolor	    $textcolor	 $ubgcolor
 
+# user config directory
+include $HOME/.config/sway/config.d/*

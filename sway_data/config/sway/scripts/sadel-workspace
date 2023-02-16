@@ -1,21 +1,24 @@
 #!/bin/bash
 
+. $HOME/.bashrc
+
 swaycmd() {
     swaymsg "$@" &>/dev/null
     sleep 0.2
 }
 
 sleepcmd() {
-    $@ &>/dev/null &
+    "$@" &>/dev/null &
     sleep 0.8
 }
+
 
 swaycmd "workspace 1"
 sleepcmd $TERMINAL
 swaycmd "workspace 2"
 sleepcmd firefox
 swaycmd "workspace 3"
-sleepcmd emacs
+sleepcmd bash -i -c "em"
 sleepcmd $TERMINAL
 swaycmd layout stacking
 swaycmd "workspace 4"

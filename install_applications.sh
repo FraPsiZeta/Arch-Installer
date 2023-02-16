@@ -5,6 +5,7 @@ source "$ROOT_PATH/utils.sh"
 
 BASE_DATA_PATH="$ROOT_PATH/base_data"
 BASE_HOME_PATH="$BASE_DATA_PATH/home"
+BASE_COMMON_PATH="$BASE_DATA_PATH/common"
 
 BASE_PACKAGES=(
     "base" "base-devel" "openssh" "linux-headers"
@@ -105,4 +106,8 @@ install_networkmanager() {
 
 install_home_dotfiles() {
     link_dir "$BASE_HOME_PATH" "$HOME"
+}
+
+install_common_files() {
+    sudo_install_dir "$BASE_COMMON_PATH" "/"
 }
