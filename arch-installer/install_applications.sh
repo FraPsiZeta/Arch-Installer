@@ -3,7 +3,7 @@
 ROOT_PATH="$(realpath $(dirname $BASH_SOURCE))"
 source "$ROOT_PATH/utils.sh"
 
-BASE_DATA_PATH="$ROOT_PATH/base_data"
+BASE_DATA_PATH="$ROOT_DATA_PATH/base_data"
 BASE_HOME_PATH="$BASE_DATA_PATH/home"
 BASE_COMMON_PATH="$BASE_DATA_PATH/common"
 

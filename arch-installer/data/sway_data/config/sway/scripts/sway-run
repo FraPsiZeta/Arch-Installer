@@ -3,7 +3,7 @@
 export TERMINAL="alacritty"
 export BROWSER="firefox"
 export EDITOR="emacs-client-tui"
-export VISUAL="emacs-client"
+export VISUAL="emacs-client-tui"
 
 export XDG_CURRENT_DESKTOP="sway" # xdg-desktop-portal
 export XDG_SESSION_DESKTOP="sway" # systemd

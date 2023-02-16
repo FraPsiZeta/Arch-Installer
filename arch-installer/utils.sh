@@ -2,6 +2,8 @@
 
 INTERACTIVE="yup"
 
+ROOT_DATA_PATH="$(realpath $(dirname $BASH_SOURCE))/data"
+
 _assert_root() {
     if [ "$EUID" -ne 0 ]; then
         printf "You need root privileges to execute this script.\n"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT_PATH="$(realpath $(dirname $BASH_SOURCE))"
+ROOT_PATH="$(realpath $(dirname $BASH_SOURCE))/arch-installer"
 source "$ROOT_PATH/install_arch.sh"
 source "$ROOT_PATH/utils.sh"
 
