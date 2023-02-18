@@ -1,6 +1,13 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+alias ls="ls --color=auto"
+
+# sudo autocomplete
+complete -cf sudo
+
+# Some utility functions
+#-----------------------
 em() {
     emacs-client "$@"
 }
@@ -9,6 +16,8 @@ cim() {
     emacs-client-tui "$@"
 }
 
+# Extract pretty much everything
+# $1 Path of the archive to extract
 extract () {
     if [ -f $1 ] ; then
         case $1 in
@@ -30,19 +39,15 @@ extract () {
     fi
 }
 
-
-alias ls="ls --color=auto"
-
-
+# Sway entry point
 ssw() {
     sway-run
 }
 
-
-
+# Prompt stuff
+#-------------
 PROMPT_DIRTRIM=3
 PROMPT_COMMAND=__prompt_command
-
 
 __prompt_command() {
     local exit_code=$?
@@ -79,29 +84,27 @@ __prompt_command() {
     PS1="${_PYVENV}${arrow} ${name}${begin}${code}${end}${path}${reset} "
 }
 
-export PYTHONDONTWRITEBYTECODE="NeverAgain"
-
 
 # Eternal bash history.
 # ---------------------
-# Undocumented feature which sets the size to "unlimited".
-# http://stackoverflow.com/questions/9457233/unlimited-bash-history
 export HISTFILESIZE=
 export HISTSIZE=
 export HISTTIMEFORMAT="[%F %T] "
-# Change the file location because certain bash sessions truncate .bash_history file upon close.
-# http://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
+# Change the file location because certain bash sessions truncate
+# .bash_history file upon close
 export HISTFILE=~/.bash_eternal_history
-PROMPT_COMMAND="$PROMPT_COMMAND;history -a"
-
 # https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history/18443#18443
-# export HISTCONTROL=ignoredups:erasedups
-# shopt -s histappend
-# PROMPT_COMMAND="history -n; history -w; history -c; history -r; $PROMPT_COMMAND"
+export HISTCONTROL=ignoredups:erasedups
+shopt -s histappend
+PROMPT_COMMAND="$PROMPT_COMMAND;history -n; history -w; history -c; history -r"
 
-complete -cf sudo
+# Some useful envvars
+#--------------------
+export PYTHONDONTWRITEBYTECODE="NeverAgain"
+
 
 # Source extra runcom
+#--------------------
 EXTRA_RUNCOM="$HOME/.bashrc.d"
 if [ -d "$EXTRA_RUNCOM" ]; then
     for f in "$EXTRA_RUNCOM"/* "$EXTRA_RUNCOM"/.[^.]*; do
