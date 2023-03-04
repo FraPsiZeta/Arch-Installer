@@ -16,6 +16,12 @@ cim() {
     emacs-client-tui "$@"
 }
 
+# Fit to windows
+feh() {
+    /usr/bin/feh --scale-down "$@" &>/dev/null &
+}
+
+
 # Extract pretty much everything
 # $1 Path of the archive to extract
 extract () {

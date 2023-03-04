@@ -1,0 +1,5 @@
+ignore-empty-password
+daemonize
+image=$HOME/Pictures/wallpapers/lock_wallpaper.jpg
+indicator-x-position=150
+indicator-y-position=950

@@ -105,9 +105,9 @@ install_networkmanager() {
 }
 
 install_home_dotfiles() {
-    link_dir "$BASE_HOME_PATH" "$HOME"
+    link_home_files "$BASE_HOME_PATH"
 }
 
 install_common_files() {
-    sudo_install_dir "$BASE_COMMON_PATH" "/"
+    install_root_files "$BASE_COMMON_PATH"
 }

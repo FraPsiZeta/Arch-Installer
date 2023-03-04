@@ -4,10 +4,24 @@ INTERACTIVE="yup"
 
 ROOT_DATA_PATH="$(realpath $(dirname $BASH_SOURCE))/data"
 
+
+_is_root() {
+    test "$EUID" -eq 0
+
+}
+
 _assert_root() {
-    if [ "$EUID" -ne 0 ]; then
+    if ! _is_root; then
         printf "You need root privileges to execute this script.\n"
         exit 6
+    fi
+}
+
+_su_exec() {
+    if _is_root; then
+        "$@"
+    else
+        sudo "$@"
     fi
 }
 
@@ -124,9 +138,9 @@ yay_uninstall() {
 
 pacman_install() {
     if [ $INTERACTIVE ]; then
-        pacman -Sy --needed "$@"
+        _su_exec pacman -Sy --needed "$@"
     else
-        pacman --noconfirm -Sy --needed "$@"
+        _su_exec pacman --noconfirm -Sy --needed "$@"
     fi
 }
 
@@ -179,8 +193,8 @@ link_dir() {
 sudo_install_dir() {
     cd "$1"
     printf "Installing content of $1 in $2\n"
-    sudo mkdir -p "$2"
-    sudo find . -type f -exec cp -rp --parents '{}' "$2" \;
+    _su_exec mkdir -p "$2"
+    _su_exec find . -type f -exec cp -rp --parents '{}' "$2" \;
     cd -
 }
 
@@ -204,8 +218,46 @@ sudo_uninstall_dir() {
     cd "$1"
     printf "Removing content of $1 from $2\n"
     # Removing installed files
-    sudo find . -type f -exec rm "$2/"'{}' \;
+    _su_exec find . -type f -exec rm "$2/"'{}' \;
     # Removing empty directories left behind
-    sudo find . ! -path . -type d -exec bash -c 'rm -d '"$2"'/{}' \; 2>/dev/null
+    _su_exec find . ! -path . -type d -exec bash -c 'rm -d '"$2"'/{}' \; 2>/dev/null
     cd -
+}
+
+#: Some useful utility functions for common paths
+
+#: $1 Source config folder to link from
+link_configuration_files() {
+    link_dir "$1" "$HOME/.config"
+}
+
+#: $1 Source config folder to copy from
+install_configuration_files() {
+    install_dir "$1" "$HOME/.config"
+}
+
+#: $1 Source config folder 
+rm_configuration_files() {
+    uninstall_dir "$1" "$HOME/.config"
+}
+
+#: $1 Source config folder to copy from
+install_root_files() {
+    sudo_install_dir "$1" "/"
+}
+
+rm_root_files() {
+    sudo_uninstall_dir "$1" "/"
+}
+
+link_home_files() {
+    link_dir "$1" "$HOME"
+}
+
+install_home_files() {
+    install_dir "$1" "$HOME"
+}
+
+rm_home_files() {
+    uninstall_dir "$1" "$HOME"
 }

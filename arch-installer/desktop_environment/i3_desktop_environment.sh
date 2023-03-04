@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-CURRENT_PATH="$(realpath $(dirname $BASH_SOURCE))"
-source "$CURRENT_PATH/de_common.sh"
+ROOT_PATH="$(realpath $(dirname $BASH_SOURCE))/.."
+source "$ROOT_PATH/utils.sh"
 
 PKG_DATA_PATH="$ROOT_DATA_PATH/i3_data"
 PKG_CONFIG_PATH="$PKG_DATA_PATH/config"
@@ -21,7 +21,7 @@ I3_PACKAGES=(
 
 
 
-install_desktop_environment() {
+DE_install_desktop_environment() {
     [ "$EUID" -eq 0 ] && printf "Desktop environment cannot be installed as root.\n" && exit 8
 
     install_root_files "$PKG_COMMON_PATH"
@@ -30,11 +30,11 @@ install_desktop_environment() {
     yay_install "${I3_PACKAGES[@]}"
 }
 
-remove_desktop_environment() {
+DE_remove_desktop_environment() {
     [ "$EUID" -eq 0 ] && printf "Desktop environment cannot be uninstalled as root.\n" && exit 8
 
     rm_root_files "$PKG_COMMON_PATH"
     rm_configuration_files "$PKG_CONFIG_PATH"
-    rm_home_dotfiles "$PKG_HOME_PATH"
+    rm_home_files "$PKG_HOME_PATH"
     yay_uninstall "${I3_PACKAGES[@]}"
 }

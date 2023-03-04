@@ -1,3 +1,0 @@
-#!/bin/sh
-
-/usr/bin/zulip --enable-features=UseOzonePlatform --ozone-platform=wayland

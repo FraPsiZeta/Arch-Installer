@@ -1,10 +1,10 @@
 set $mod Mod4
 set $alt Mod1
 set $term $TERMINAL
+set $lock swaylock
 
 # Some variables:
 set $wallpaper_path $HOME/Pictures/wallpapers/wallpaper.jpg
-set $wallpaper_lock_path $HOME/Pictures/wallpapers/lock_wallpaper.jpg
 set $scripts_path $HOME/.config/sway/scripts
 set $resize_step 1
 
@@ -27,7 +27,7 @@ font pango:"Hack Nerd Font" 10
 # xwayland disable
 
 # Scaling, if needed
-# output <name> scale <factor>
+output eDP-1 scale 1.5
 
 # Disable focus on hover
 focus_follows_mouse yes
@@ -44,14 +44,12 @@ input type:keyboard {
 }
 
 input type:touchpad {
-    tap disabled
+    tap enabled
 }
 
 
 # Set sadel default layout
 bindsym $mod+Shift+m exec "bash $scripts_path/sadel-workspace"
-
-set $lock "swaylock -e -f -i $wallpaper_lock_path  --indicator-x-position 150 --indicator-y-position 950" 
 
 bindsym $mod+Shift+x exec $lock
 
@@ -61,7 +59,8 @@ exec systemctl --user import-environment XDG_CURRENT_DESKTOP WAYLAND_DISPLAY
 # Idle settings
 exec swayidle -w \
          timeout 300 $lock \
-         timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+         timeout 30 'if pgrep -x swaylock; then swaymsg "output * dpms off"; fi' \
+         resume 'swaymsg "output * dpms on"' \
          before-sleep $lock
 
 # Import gtk settings
@@ -206,8 +205,7 @@ bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
 #Assign programs to workspaces use xprop for class name
-for_window [app_id="firefox"] move to workspace $ws2
-for_window [class="firefox"] move to workspace $ws2
+for_window [app_id="firefox"] move to workspace $ws2, focus
 for_window [class="Emacs"] move to workspace $ws3
 for_window [class="Thunderbird"] move to workspace $ws4
 for_window [class="Zulip"] move to workspace $ws4
