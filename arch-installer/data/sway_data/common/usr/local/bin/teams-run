@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/usr/bin/chromium --enable-features=UseOzonePlatform --ozone-platform=wayland https://teams.microsoft.com/
+/usr/bin/chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --new-window https://teams.microsoft.com/
