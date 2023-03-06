@@ -93,16 +93,16 @@ __prompt_command() {
 
 # Eternal bash history.
 # ---------------------
-export HISTFILESIZE=
-export HISTSIZE=
-export HISTTIMEFORMAT="[%F %T] "
+HISTFILESIZE=
+HISTSIZE=
+HISTTIMEFORMAT="[%F %T] "
 # Change the file location because certain bash sessions truncate
 # .bash_history file upon close
 export HISTFILE=~/.bash_eternal_history
 # https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history/18443#18443
-export HISTCONTROL=ignoredups:erasedups
+HISTCONTROL=ignoredups:erasedups
 shopt -s histappend
-PROMPT_COMMAND="$PROMPT_COMMAND;history -n; history -w; history -c; history -r"
+PROMPT_COMMAND="$PROMPT_COMMAND;history -a"
 
 # Some useful envvars
 #--------------------

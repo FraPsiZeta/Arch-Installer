@@ -1,7 +1,7 @@
 #!/bin/bash
 
-CURRENT_PATH="$(realpath $(dirname $BASH_SOURCE))"
-source "$CURRENT_PATH/de_common.sh"
+ROOT_PATH="$(realpath $(dirname $BASH_SOURCE))/.."
+source "$ROOT_PATH/utils.sh"
 
 PKG_DATA_PATH="$ROOT_DATA_PATH/sway_data"
 PKG_CONFIG_PATH="$PKG_DATA_PATH/config"
@@ -11,7 +11,7 @@ PKG_COMMON_PATH="$PKG_DATA_PATH/common"
 SWAY_PACKAGES=(
     "sway" "fzf" "swaybg" "swayidle" "swaylock" "xorg-xwayland" "waybar"
     "nerd-fonts" "alacritty" "feh" "grim" "slurp" "jq" "xorg-xwayland"
-    "bluez-utils" "playerctl" "mpv" "dunst" "wl-clipboard"
+    "bluez-utils" "playerctl" "mpv" "dunst" "wl-clipboard" "chromium"
     "alsa-utils" "light" "papirus-icon-theme" "htop" "sway-launcher-desktop"
     "alsa-lib" "alsa-plugins" "network-manager-applet" "ranger" "dragon-drop"
     "nordic-theme" "pavucontrol" "xdg-desktop-portal-wlr"

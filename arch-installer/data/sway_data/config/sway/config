@@ -7,6 +7,7 @@ set $lock swaylock
 set $wallpaper_path $HOME/Pictures/wallpapers/wallpaper.jpg
 set $scripts_path $HOME/.config/sway/scripts
 set $resize_step 1
+set $screenshot_key XF86LaunchA
 
 
 # DIsplays setup: should be in a separate config
@@ -30,7 +31,7 @@ font pango:"Hack Nerd Font" 10
 output eDP-1 scale 1.5
 
 # Disable focus on hover
-focus_follows_mouse yes
+focus_follows_mouse no
 
 # Set keystroke repeating
 input type:keyboard {
@@ -70,13 +71,16 @@ exec_always bash $scripts_path/import-gsettings
 exec mako
 
 # Media player controls
-bindsym XF86AudioPlay exec  playerctl play
-bindsym XF86AudioPause exec  playerctl pause
-bindsym XF86AudioNext exec  playerctl next
-bindsym XF86AudioPrev exec  playerctl previous
+bindsym XF86AudioPlay exec playerctl play
+bindsym XF86AudioPause exec playerctl pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
 
+# Backlight controls
 bindsym XF86MonBrightnessDown exec light -U 5
 bindsym XF86MonBrightnessUp exec light -A 5
+bindsym XF86KbdBrightnessUp exec light -As "sysfs/leds/smc::kbd_backlight" 10
+bindsym XF86KbdBrightnessDown exec light -Us "sysfs/leds/smc::kbd_backlight" 10
 
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
@@ -84,9 +88,9 @@ bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 
 # Screenshots
 bindsym --to-code  {
-   print exec /usr/share/sway/scripts/grimshot --notify save output
-   Shift+print exec /usr/share/sway/scripts/grimshot --notify save area
-   $mod+Shift+print exec /usr/share/sway/scripts/grimshot --notify save screen
+   $screenshot_key exec /usr/share/sway/scripts/grimshot --notify save output
+   Shift+$screenshot_key exec /usr/share/sway/scripts/grimshot --notify save area
+   $mod+Shift+$screenshot_key exec /usr/share/sway/scripts/grimshot --notify save screen
 }
 
 # Use Mouse+$mod to drag floating windows to their wanted position
