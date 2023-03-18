@@ -3,9 +3,9 @@
 ROOT_PATH="$(realpath $(dirname $BASH_SOURCE))"
 source "$ROOT_PATH/utils.sh"
 
-BASE_DATA_PATH="$ROOT_DATA_PATH/base_data"
+BASE_DATA_PATH="$ROOT_DATA_PATH/common"
 BASE_HOME_PATH="$BASE_DATA_PATH/home"
-BASE_COMMON_PATH="$BASE_DATA_PATH/common"
+BASE_COMMON_PATH="$BASE_DATA_PATH/root"
 
 BASE_PACKAGES=(
     "base" "base-devel" "openssh" "linux-headers"
@@ -17,7 +17,7 @@ BASE_PACKAGES=(
 APPLICATION_PACKAGES=(
     "firefox" "thunderbird" "spectacle" "zathura-pdf-mupdf"
     "gimp" "emacs"  "pass" "firefox-extension-passff"
-    "nodejs" "firefox-tridactyl"
+    "nodejs" "firefox-tridactyl" "plocate"
 )
 
 install_base() {
